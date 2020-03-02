@@ -8,15 +8,28 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 from search import views as search_views
 
-urlpatterns = [
-    url(r'^django-admin/', admin.site.urls),
+# OLD
+#urlpatterns = [
+#    url(r'^django-admin/', admin.site.urls),
+#
+#     url(r'^admin/', include(wagtailadmin_urls)),
+#     url(r'^documents/', include(wagtaildocs_urls)),
+#
+#     url(r'^search/$', search_views.search, name='search'),
+#
+# ]
 
+urlpatterns = [
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
-
     url(r'^search/$', search_views.search, name='search'),
-
 ]
+
+from django.conf.urls.i18n import i18n_patterns
+
+urlpatterns += i18n_patterns(
+    url(r'', include(wagtail_urls)),
+)
 
 
 if settings.DEBUG:
