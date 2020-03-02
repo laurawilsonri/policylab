@@ -27,9 +27,13 @@ password: policylab
 python manage.py makemigrations
 python manage.py migrate
 
-
+# Database
+policylab/db.sqlite3
+The table home_transhomepage stores text for /home page.
 
 
 # Troubleshooting
 Try replacing python with python3!
+
+
 
