@@ -24,6 +24,10 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 # Application definition
 
 INSTALLED_APPS = [
+    'wagtail_modeltranslation',
+    'wagtail_modeltranslation.makemigrations',
+    'wagtail_modeltranslation.migrate',
+
     'home',
     'search',
 
@@ -51,6 +55,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -119,7 +126,17 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+
+from django.utils.translation import gettext_lazy as _
+
+LANGUAGES = [
+    ('en', _('English')),
+    ('de', _('German')),
+    ('fr', _('French')),
+    ('it', _('Italian')),
+    ('es', _('Spanish')),
+]
 
 TIME_ZONE = 'UTC'
 
