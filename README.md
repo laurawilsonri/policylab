@@ -1,7 +1,7 @@
 # Policy Lab Test Website
 Wagtail site for testing model translation on policylab
 
-# Install:
+## Install:
 <pre><code>git clone <\insert_clone_url\>
 cd policylab
 python3 -m venv plab/env
@@ -11,7 +11,7 @@ pip install -r requirements.txt
 pip install wagtail-modeltranslation
 </code></pre>
 
-# How to run:
+## How to run:
 <pre><code>cd policylab
 source plab/env/bin/activate
 python manage.py runserver
@@ -19,20 +19,20 @@ python manage.py runserver
 
 Then, navigate to http://127.0.0.1:8000/admin to see CMS!
 
-# Login info
+## Login info
 username: admin
 password: policylab
 
-# Push changes
+## Push changes
 python manage.py makemigrations
 python manage.py migrate
 
-# Database
-policylab/db.sqlite3
-The table home_transhomepage stores text for /home page.
+## Database
+Found at <code>policylab/db.sqlite3</code> <br>
+The table <code>home_transhomepage</code> stores text for /home page.
 
 
-# Troubleshooting
+## Troubleshooting
 Try replacing python with python3!
 
 
