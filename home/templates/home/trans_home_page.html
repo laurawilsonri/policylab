@@ -1,0 +1,6 @@
+{% load wagtailcore_tags %}
+ <div class="article__body">
+     <h2 class="article__title">{{ page.title }}</h2>
+     {{ page.body|richtext }}
+     {{ page.footer|richtext }}
+ </div>

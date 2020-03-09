@@ -7,4 +7,5 @@ from modeltranslation.decorators import register
 class TransHomePageTR(TranslationOptions):
     fields = (
         'body',
+        'footer',
     )

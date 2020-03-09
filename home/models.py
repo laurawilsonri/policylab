@@ -7,7 +7,9 @@ from wagtail.admin.edit_handlers import FieldPanel
 
 class TransHomePage(Page):
     body = RichTextField(blank=True, default="")
+    footer = RichTextField(blank=True, default="")
 
     content_panels = Page.content_panels + [
         FieldPanel('body'),
+        FieldPanel('footer'),
     ]
