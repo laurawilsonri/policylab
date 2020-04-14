@@ -6,7 +6,7 @@ Wagtail site for testing model translation on policylab
 cd policylab
 python3 -m venv plab/env
 source plab/env/bin/activate
-pip install wagtail 
+pip install wagtail     
 pip install -r requirements.txt 
 pip install wagtail-modeltranslation
 </code></pre>
@@ -34,6 +34,8 @@ The table <code>home_transhomepage</code> stores text for /home page.
 
 ## Troubleshooting
 Try replacing python with python3!
+
+Test
 
 
 
