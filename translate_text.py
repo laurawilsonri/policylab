@@ -17,6 +17,16 @@ def add_translation(table_name, field_name, row_id, lang_code, translated_text):
     cur.execute(sql, (translated_text, row_id))
     con.commit()
 
+def get_val(table_name, field_name, row_id):
+    
+    # update that row in the table
+    sql = ''' SELECT ''' + field_name + ''' FROM ''' + table_name + ''' WHERE Page_ptr_id = ?'''
+              
+    # execute the sql command
+    cur = con.cursor()
+    cur.execute(sql, (trow_id))
+    con.commit()
+
 
 
 # get information about the translated field
