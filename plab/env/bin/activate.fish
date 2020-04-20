@@ -29,7 +29,7 @@ end
 # unset irrelevant variables
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/Users/maddyadams/Desktop/SocialChange/policylab/plab/env"
+set -gx VIRTUAL_ENV "/Users/naamaanddan/Documents/GitHub/translation-flow/plab/env"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
