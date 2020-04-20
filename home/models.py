@@ -8,6 +8,7 @@ from wagtail.core.fields import RichTextField
 from wagtail.admin.edit_handlers import FieldPanel
 from django.dispatch import receiver
 from wagtail.core.signals import page_published
+from django.shortcuts import get_object_or_404
 #from '../translate_text.py' import add_translation
 
 from hashlib import sha1
@@ -96,20 +97,29 @@ def submit_job(orig_text, target_lang):
         print(res_json)
 
 
+# Called when page is published. 
 def on_update(sender, **kwargs):
-    instance = kwargs['instance']
+    page = kwargs['instance']
     revision = kwargs['revision']
     print("=================================")
-   # print("REVISION", revision)
-   # print("REVISION_BODY_EN", revision.content_json)
-   # print("SENDER: ", sender.body_en(field_name))
-   # print("INSTANCE", instance.get_context)
-   # print("PAGE_BODY_EN", instance.body_en)
-    print("TYPE OF JSON", type(revision.content_json))
-    submit_job(revision.content_json, "es")
-    print("SENDER.OBJECTS: ", sender.objects.get(pk=4).body)
-    #print("ISNTANCE OBJ",instance.objects )
-   #ender.objects.filter(pk=obj.pk).update(val=F('val') + 1)
+    
+    # get difference between revisions
+    revisions = page.revisions.order_by('-created_at', 'id')
+    prev_revision = revisions[1].as_page_object()
+    latest_revision = revision.as_page_object()
 
-# Register a receiver
+    comparison = page.get_edit_handler().get_comparison()
+    comparison = [comp(prev_revision, latest_revision) for comp in comparison]
+    comparison = [comp for comp in comparison if comp.has_changed()]
+
+    # TODO: make JSON of fields that were changed in form {field_name: text}
+    for diff in comparison:
+        field_label = diff.field_label()
+        print("CHANGED FIELD", field_label)
+
+    # submit translation job via 3rd party API
+    submit_job(revision.content_json, "es")
+
+
+# Register a receiver that listens for when page is published
 page_published.connect(on_update)
