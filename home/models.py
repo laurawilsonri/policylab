@@ -9,6 +9,10 @@ from wagtail.admin.edit_handlers import FieldPanel
 from django.dispatch import receiver
 from wagtail.core.signals import page_published
 from django.shortcuts import get_object_or_404
+import sqlite3
+import json
+    
+
 #from '../translate_text.py' import add_translation
 
 from hashlib import sha1
@@ -112,13 +116,64 @@ def on_update(sender, **kwargs):
     comparison = [comp(prev_revision, latest_revision) for comp in comparison]
     comparison = [comp for comp in comparison if comp.has_changed()]
 
-    # TODO: make JSON of fields that were changed in form {field_name: text}
+    table_name = str(page.content_type).replace(' ', '').replace('|', '_')
+    
+    # make dictionary of fields that were changed in form {field_name: text}
+    changed_fields = {}
     for diff in comparison:
-        field_label = diff.field_label()
-        print("CHANGED FIELD", field_label)
+        # clean field_label to match database formatting
+        field_label = diff.field_label().replace('[', '').replace(']', '').replace(' ', '_')
+        field_text = get_field_val(table_name, str(field_label), int(page.pk))
 
+        # currently Titles aren't stored in the database, so they will be null 
+        if field_text:
+            changed_fields[field_label] = field_text
+
+    print(changed_fields)
     # submit translation job via 3rd party API
-    submit_job(revision.content_json, "es")
+    # submit_job(changed_fields, "es")
+
+
+#### DATABASE UPDATING #####
+
+def get_field_val(table_name, field_name, pg_id):
+    
+    try:
+        # Create a SQL connection to our SQLite database
+        con = sqlite3.connect("db.sqlite3")
+
+        # update that row in the table
+        sql = '''SELECT ''' + field_name + ''' FROM ''' + table_name + ''' WHERE Page_ptr_id = ''' + str(pg_id) + ''';'''
+              
+        # execute the sql command
+        cur = con.cursor()
+        cur.execute(sql)
+        ans = cur.fetchall()  
+        con.commit()
+
+        if ans and len(ans) > 0:
+            return ans[0]
+
+    except sqlite3.Error as e:
+        return None
+
+
+def add_translation(table_name, field_name, pg_id, lang_code, translated_text):
+    try:
+        # Create a SQL connection to our SQLite database
+        con = sqlite3.connect("db.sqlite3")
+
+        # update that row in the table
+        sql = '''UPDATE ''' + table_name + '''
+                SET ''' + field_name + '''_''' + lang_code + ''' = ?
+                WHERE Page_ptr_id = ?'''
+                
+        # execute the sql command
+        cur = con.cursor()
+        cur.execute(sql, (translated_text, pg_id))
+        con.commit()
+    except sqlite3.Error as e:
+        print("ERROR: ", str(lang_code), " TRANSLATION FOR ", field_name, "COULD NOT BE UPDATED IN DATABASE.")
 
 
 # Register a receiver that listens for when page is published

@@ -1,42 +1,42 @@
-import sqlite3
+# import sqlite3
     
 
-# Create a SQL connection to our SQLite database
-con = sqlite3.connect("db.sqlite3")
+# # Create a SQL connection to our SQLite database
+# con = sqlite3.connect("db.sqlite3")
 
 
-def add_translation(table_name, field_name, row_id, lang_code, translated_text):
+# def add_translation(table_name, field_name, row_id, lang_code, translated_text):
     
-    # update that row in the table
-    sql = ''' UPDATE ''' + table_name + '''
-              SET ''' + field_name + '''_''' + lang_code + ''' = ?
-              WHERE Page_ptr_id = ?'''
+#     # update that row in the table
+#     sql = ''' UPDATE ''' + table_name + '''
+#               SET ''' + field_name + '''_''' + lang_code + ''' = ?
+#               WHERE Page_ptr_id = ?'''
               
-    # execute the sql command
-    cur = con.cursor()
-    cur.execute(sql, (translated_text, row_id))
-    con.commit()
+#     # execute the sql command
+#     cur = con.cursor()
+#     cur.execute(sql, (translated_text, row_id))
+#     con.commit()
 
-def get_val(table_name, field_name, row_id):
+# def get_val(table_name, field_name, row_id):
     
-    # update that row in the table
-    sql = ''' SELECT ''' + field_name + ''' FROM ''' + table_name + ''' WHERE Page_ptr_id = ?'''
+#     # update that row in the table
+#     sql = ''' SELECT ''' + field_name + ''' FROM ''' + table_name + ''' WHERE Page_ptr_id = ?'''
               
-    # execute the sql command
-    cur = con.cursor()
-    cur.execute(sql, (trow_id))
-    con.commit()
+#     # execute the sql command
+#     cur = con.cursor()
+#     cur.execute(sql, (row_id))
+#     con.commit()
 
 
 
-# get information about the translated field
-table_name = "home_transhomepage"
-field_name = "Body"
-lang_code = "FR"
-translated_text = "NEW FR TRANSLATION"
-row_id = 4
+# # get information about the translated field
+# table_name = "home_transhomepage"
+# field_name = "Body"
+# lang_code = "FR"
+# translated_text = "NEW FR TRANSLATION"
+# row_id = 4
 
-#add_translation(table_name, field_name, row_id, lang_code, translated_text)
+# #add_translation(table_name, field_name, row_id, lang_code, translated_text)
 
 
 
