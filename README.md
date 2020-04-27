@@ -24,8 +24,10 @@ username: admin
 password: policylab
 
 ## Push changes
-python manage.py makemigrations
-python manage.py migrate
+<pre><code>
+  python manage.py makemigrations
+  python manage.py migrate
+</code></pre>
 
 ## Database
 Found at <code>policylab/db.sqlite3</code> <br>
