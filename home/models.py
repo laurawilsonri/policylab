@@ -11,7 +11,7 @@ from wagtail.core.signals import page_published
 from django.shortcuts import get_object_or_404
 import sqlite3
 import json
-    
+
 
 #from '../translate_text.py' import add_translation
 
@@ -36,9 +36,9 @@ class TransHomePage(Page):
         FieldPanel('footer'),
     ]
 
-def submit_job(orig_text, target_lang):
-    PUBLIC_KEY = 'qHIvPPA=RDz@-cqLNdUWv_=52R2OdIHiGrYmtLyMm|^NOcAzC0j(zM[mpa~kTC$-'
-    PRIVATE_KEY = 's]|xRMswazI@NG7({79Cvk|gb)vzMXEkdc=3|PG-9fQZFw7aXVraPKz5=YCJRxvl'
+def submit_job(text_dict, target_lang):
+    PUBLIC_KEY = '9VB[l8X1eYBp5NOkmSVq5Iw$(Jq2TVDX=Xy@9tHlurEq5MD{$qdN(99jVi_Llhc@'
+    PRIVATE_KEY = '-(3GLORB[X]8Rw@@LZ2ch(Ieu](-m}y^g2vU3ty(jMly-D{yEAGq_smU{WY1xXJ0'
     # use jobs endpoint to submit jobs
     URL = "http://api.sandbox.gengo.com/v2/translate/jobs"
     header = {"Accept": "application/json"}
@@ -60,33 +60,46 @@ def submit_job(orig_text, target_lang):
         sha1
     ).hexdigest()
 
-    job1 = {
-        # slug = internal job name
-        'slug': 'auto',
-        # body = text to translate
-        'body_src': str(orig_text),
-        #lc_src = source language
-        'lc_src': 'en',
-        #lc_tgt = target language
-        'lc_tgt': str(target_lang),
-        #tier=quality level (standard vs pro)
-        'tier': 'standard',
-        #auto_approve = whether or not translation will be automatically approved
-        # by the client (us)(for testing purposes)
-        'auto_approve': 1,
-        # purpose = what is the purpose of the job
-        'purpose': 'Web localization',
-        # pre_mt = whether or not to return a machine translation if translation
-        # isn't ready yet. currently set to 1 for testing.
-        'pre_mt': 1
-        # ****FUTURE PARAMS WE MAY USE******:
-        # callback_url: the url where system responses, comments, etc will be posted
-        # attachments: this is where we can attach any files we may want, such as a glossary or video content
-        # custom_data: where we may attach any extra data for the translator's reference
-    }
+    iter = 0
+    joblist = []
 
-    jobs = {'job_1': job1}
-    data["data"] = json.dumps({'jobs': jobs}, separators=(',', ':'))
+    for item in text_dict.items():
+
+        field_name = item[0]
+        orig_text = item[1]
+
+        jobname = str('job' + str(iter))
+        iter += 1
+
+        job = {
+            # slug = internal job name
+            'slug': field_name,
+            # body = text to translate
+            'body_src': str(orig_text),
+            #lc_src = source language
+            'lc_src': 'en',
+            #lc_tgt = target language
+            'lc_tgt': str(target_lang),
+            #tier=quality level (standard vs pro)
+            'tier': 'standard',
+            #auto_approve = whether or not translation will be automatically approved
+            # by the client (us)(for testing purposes)
+            'auto_approve': 1,
+            # purpose = what is the purpose of the job
+            'purpose': 'Web localization',
+            # pre_mt = whether or not to return a machine translation if translation
+            # isn't ready yet. currently set to 1 for testing.
+            'pre_mt': 1
+            # ****FUTURE PARAMS WE MAY USE******:
+            # callback_url: the url where system responses, comments, etc will be posted
+            # attachments: this is where we can attach any files we may want, such as a glossary or video content
+            # custom_data: where we may attach any extra data for the translator's reference
+        }
+        print(job)
+        joblist.append(job)
+
+    print(joblist)
+    data["data"] = json.dumps({'jobs': joblist}, separators=(',', ':'))
 
     #submit job
     post_job = requests.post(URL, data=data, headers=header)
@@ -101,12 +114,13 @@ def submit_job(orig_text, target_lang):
         print(res_json)
 
 
-# Called when page is published. 
+
+# Called when page is published.
 def on_update(sender, **kwargs):
     page = kwargs['instance']
     revision = kwargs['revision']
     print("=================================")
-    
+
     # get difference between revisions
     revisions = page.revisions.order_by('-created_at', 'id')
     prev_revision = revisions[1].as_page_object()
@@ -117,7 +131,7 @@ def on_update(sender, **kwargs):
     comparison = [comp for comp in comparison if comp.has_changed()]
 
     table_name = str(page.content_type).replace(' ', '').replace('|', '_')
-    
+
     # make dictionary of fields that were changed in form {field_name: text}
     changed_fields = {}
     for diff in comparison:
@@ -125,30 +139,30 @@ def on_update(sender, **kwargs):
         field_label = diff.field_label().replace('[', '').replace(']', '').replace(' ', '_')
         field_text = get_field_val(table_name, str(field_label), int(page.pk))
 
-        # currently Titles aren't stored in the database, so they will be null 
+        # currently Titles aren't stored in the database, so they will be null
         if field_text:
             changed_fields[field_label] = field_text
 
     print(changed_fields)
     # submit translation job via 3rd party API
-    # submit_job(changed_fields, "es")
+    submit_job(changed_fields, "es")
 
 
 #### DATABASE UPDATING #####
 
 def get_field_val(table_name, field_name, pg_id):
-    
+
     try:
         # Create a SQL connection to our SQLite database
         con = sqlite3.connect("db.sqlite3")
 
         # update that row in the table
         sql = '''SELECT ''' + field_name + ''' FROM ''' + table_name + ''' WHERE Page_ptr_id = ''' + str(pg_id) + ''';'''
-              
+
         # execute the sql command
         cur = con.cursor()
         cur.execute(sql)
-        ans = cur.fetchall()  
+        ans = cur.fetchall()
         con.commit()
 
         if ans and len(ans) > 0:
@@ -167,7 +181,7 @@ def add_translation(table_name, field_name, pg_id, lang_code, translated_text):
         sql = '''UPDATE ''' + table_name + '''
                 SET ''' + field_name + '''_''' + lang_code + ''' = ?
                 WHERE Page_ptr_id = ?'''
-                
+
         # execute the sql command
         cur = con.cursor()
         cur.execute(sql, (translated_text, pg_id))
