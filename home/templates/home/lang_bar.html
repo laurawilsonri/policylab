@@ -1,0 +1,48 @@
+<!-- Dropdown to select language -->
+<style>
+    #lang-select {
+        padding: 10px;
+        width: 150px;
+        height: 30px;
+        background-color: white;
+        box-shadow: 1px 3px 3px rgb(167, 167, 167);
+        font-size: .8em;
+ }
+</style>
+
+<div id="lang-bar">
+    <label>Language</label><br>
+    <select id="lang-select" onchange="langChange()">
+      <option value="en">English</option>
+      <option value="po">Portuguese</option>
+      <option value="fr">French</option>
+      <option value="es">Spanish</option>
+      <option value="ar">Arabic</option>
+    </select>
+
+    <script type="text/javascript">
+        // Set the selected language according to the current lang code in the URL
+        const dropdown = document.getElementById("lang-select")
+        loc_split = window.location.href.split('/');
+        lang_code = loc_split[3];
+
+        for(lang of dropdown.options) {
+            if (lang.value == lang_code){
+                lang.selected = true;
+            }
+        }
+
+        /** 
+            When language is selected from dropdown, update the URL with the proper language code 
+        */
+        function langChange() {
+            const dropdown = document.getElementById("lang-select")
+            const lang_code = dropdown.options[dropdown.selectedIndex].value
+    
+            loc_split = window.location.href.split('/');
+            path = loc_split[4];
+            window.location.pathname = lang_code + "/" + path
+        }
+        </script>
+
+    </div>
