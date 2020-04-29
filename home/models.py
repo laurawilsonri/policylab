@@ -141,7 +141,7 @@ def on_update(sender, **kwargs):
 
         # currently Titles aren't stored in the database, so they will be null
         if field_text:
-            changed_fields[field_label] = field_text
+            changed_fields[field_label] = {"label": field_label, "text": field_text, "pk": int(page.pk), "table_name": table_name}
 
     print(changed_fields)
     # submit translation job via 3rd party API

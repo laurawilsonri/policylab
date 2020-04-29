@@ -5,7 +5,7 @@
         width: 150px;
         height: 30px;
         background-color: white;
-        box-shadow: 1px 3px 3px rgb(167, 167, 167);
+        box-shadow: 1px 2px 2px rgb(167, 167, 167);
         font-size: .8em;
  }
 </style>
@@ -14,7 +14,7 @@
     <label>Language</label><br>
     <select id="lang-select" onchange="langChange()">
       <option value="en">English</option>
-      <option value="po">Portuguese</option>
+      <option value="pt">Portuguese</option>
       <option value="fr">French</option>
       <option value="es">Spanish</option>
       <option value="ar">Arabic</option>
@@ -26,10 +26,17 @@
         loc_split = window.location.href.split('/');
         lang_code = loc_split[3];
 
+        let found = false;
         for(lang of dropdown.options) {
             if (lang.value == lang_code){
                 lang.selected = true;
+                found = true
             }
+        }
+
+        //default to English, force lang_code to be in there
+        if(!found){
+            window.location.pathname = "en/" + loc_split[3]
         }
 
         /** 
