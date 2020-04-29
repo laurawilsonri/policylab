@@ -9,12 +9,6 @@ source plab/env/bin/activate
 pip install wagtail     
 pip install -r requirements.txt
 pip install wagtail-modeltranslation
-
-[this is a test]
-
-
-
-
 </code></pre>
 
 ## How to run:
@@ -30,8 +24,10 @@ username: admin
 password: policylab
 
 ## Push changes
-python manage.py makemigrations
-python manage.py migrate
+<pre><code>
+  python manage.py makemigrations
+  python manage.py migrate
+</code></pre>
 
 ## Database
 Found at <code>policylab/db.sqlite3</code> <br>
@@ -40,11 +36,3 @@ The table <code>home_transhomepage</code> stores text for /home page.
 
 ## Troubleshooting
 Try replacing python with python3!
-<<<<<<< HEAD
-=======
-
-Test
-
-
-
->>>>>>> 20c7b675d29d0d23a65962c452a80612ed6ba225
