@@ -191,4 +191,4 @@ def add_translation(table_name, field_name, pg_id, lang_code, translated_text):
 
 
 # Register a receiver that listens for when page is published
-page_published.connect(on_update)
+#page_published.connect(on_update)

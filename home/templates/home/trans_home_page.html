@@ -1,7 +1,17 @@
 {% load wagtailcore_tags %}
-{% include 'home/lang_bar.html' %}
+
+<link rel="stylesheet" href="../../static/css/trans_home_page.css">
+
+<div id="trans-nav-bar">
+    {% include 'home/lang_bar.html' %}
+    <span id="site-title" style="font-size: medium; line-height: 30px;"><b>Translation API Demo</b></span>
+</div>
  <div class="article__body">
-     <h2 class="article__title">{{ page.title }}</h2>
+    <h2 class="article__title">{{ page.title }}</h2>
      {{ page.body|richtext }}
      {{ page.footer|richtext }}
  </div>
+
+
+
+
