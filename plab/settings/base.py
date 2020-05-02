@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import csv
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
@@ -130,13 +131,12 @@ LANGUAGE_CODE = 'en'
 
 from django.utils.translation import gettext_lazy as _
 
-LANGUAGES = [
-    ('en', _('English')),
-    ('fr', _('French')),
-    ('pt', _('Portuguese')),
-    ('es', _('Spanish')),
-    ('ar', _('Arabic')),
-]
+# import desired supported languages from csv
+LANGUAGES = []
+with open('plab/settings/languages.csv', newline='') as csvfile:
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+        LANGUAGES.append((row['code'], _(row['name'])))
 
 TIME_ZONE = 'UTC'
 

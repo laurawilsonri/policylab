@@ -1,28 +1,23 @@
 <!-- Dropdown to select language -->
-<style>
-    #lang-select {
-        padding: 10px;
-        width: 150px;
-        height: 30px;
-        background-color: white;
-        box-shadow: 1px 2px 2px rgb(167, 167, 167);
-        font-size: .8em;
- }
-</style>
+
+<link rel="stylesheet" href="../../static/css/lang_bar.css">
 
 <div id="lang-bar">
-    <label>Language</label><br>
+    <label>Language:</label>
     <select id="lang-select" onchange="langChange()">
       <option value="en">English</option>
+      <option value="es">Spanish</option>
       <option value="pt">Portuguese</option>
       <option value="fr">French</option>
-      <option value="es">Spanish</option>
       <option value="ar">Arabic</option>
     </select>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script type="text/javascript">
-        // Set the selected language according to the current lang code in the URL
+        // TODO populate dropdown with supported languages 
         const dropdown = document.getElementById("lang-select")
+
+        // Set the selected language according to the current lang code in the URL
         loc_split = window.location.href.split('/');
         lang_code = loc_split[3];
 

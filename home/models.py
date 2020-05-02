@@ -28,10 +28,10 @@ class TransHomePage(Page):
     body = RichTextField(blank=True, default="")
     footer = RichTextField(blank=True, default="")
 
-   # @receiver(page_published)
-   # def on_change(instance, **kwargs):
-   #     print('=======================',instance,kwargs)
-   #     return
+    @receiver(page_published)
+    def on_change(instance, **kwargs):
+        print('=======================',instance,kwargs)
+        return
 
     content_panels = Page.content_panels + [
         FieldPanel('body'),
@@ -145,16 +145,17 @@ def on_update(sender, **kwargs):
     for diff in comparison:
         # clean field_label to match database formatting
         field_label = diff.field_label().replace('[', '').replace(']', '').replace(' ', '_')
-        field_text = get_field_val(table_name, str(field_label), int(page.pk))
 
-        # currently Titles aren't stored in the database, so they will be null
-        if field_text:
-            changed_fields[field_label] = {"label": field_label, "text": field_text, "pk": int(page.pk), "table_name": table_name}
+        # only submit field_labels that are English
+        if field_label.endswith("en"):
+            field_text = get_field_val(table_name, str(field_label), int(page.pk))
 
-    print(changed_fields)
+            # currently Titles aren't stored in the database, so they will be null
+            if field_text:
+                changed_fields[field_label] = {"label": field_label, "text": field_text, "pk": int(page.pk), "table_name": table_name}
+    
     # submit translation job via 3rd party API
     submit_job(changed_fields, "es")
-
 
 #### DATABASE UPDATING #####
 
