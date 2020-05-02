@@ -75,8 +75,20 @@ def submit_job(text_dict, target_lang):
         page_id = item.get('pk')
         table_name = item.get('table_name')
 
+        print('||||||||||||||||||||||||||||||||||||||||||||| \n')
+        print(field_name)
+        print(orig_text)
+        print(page_id)
+        print(table_name)
+        print('||||||||||||||||||||||||||||||||||||||||||||| \n')
+
         jobname = str('job' + str(iter))
         iter += 1
+
+
+        custom_data = {"table_name":table_name, "field_name": field_name, "page_id": page_id, "target_lang": str(target_lang)}
+        custom_data = json.dumps(custom_data)
+
 
         job = {
             # slug = internal job name
@@ -101,7 +113,7 @@ def submit_job(text_dict, target_lang):
             # callback_url: the url where system responses, comments, etc will be posted
             # attachments: this is where we can attach any files we may want, such as a glossary or video content
             # custom_data: where we may attach any extra internal data
-            'custom_data': [table_name, field_name, pg_id, str(target_lang)]
+            'custom_data': custom_data
         }
         print(job)
         joblist.append(job)
@@ -153,9 +165,13 @@ def on_update(sender, **kwargs):
             # currently Titles aren't stored in the database, so they will be null
             if field_text:
                 changed_fields[field_label] = {"label": field_label, "text": field_text, "pk": int(page.pk), "table_name": table_name}
-    
+
+    print('********************************** \n')
+    print(changed_fields)
     # submit translation job via 3rd party API
-    submit_job(changed_fields, "es")
+
+    if len(changed_fields) > 0:
+        submit_job(changed_fields, "es")
 
 #### DATABASE UPDATING #####
 
