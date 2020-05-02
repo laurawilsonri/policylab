@@ -21,6 +21,8 @@ import json
 import requests
 import time
 
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 class TransHomePage(Page):
     body = RichTextField(blank=True, default="")
@@ -63,10 +65,15 @@ def submit_job(text_dict, target_lang):
     iter = 0
     joblist = []
 
-    for item in text_dict.items():
+    for thing in text_dict.items():
+        # each item is of format: {"label": field_label, "text": field_text, "pk": int(page.pk), "table_name": table_name}
+        item = thing[1]
+        print(item)
 
-        field_name = item[0]
-        orig_text = item[1]
+        field_name = item.get('label')
+        orig_text = item.get ('text')
+        page_id = item.get('pk')
+        table_name = item.get('table_name')
 
         jobname = str('job' + str(iter))
         iter += 1
@@ -89,11 +96,12 @@ def submit_job(text_dict, target_lang):
             'purpose': 'Web localization',
             # pre_mt = whether or not to return a machine translation if translation
             # isn't ready yet. currently set to 1 for testing.
-            'pre_mt': 1
+            'pre_mt': 1,
             # ****FUTURE PARAMS WE MAY USE******:
             # callback_url: the url where system responses, comments, etc will be posted
             # attachments: this is where we can attach any files we may want, such as a glossary or video content
-            # custom_data: where we may attach any extra data for the translator's reference
+            # custom_data: where we may attach any extra internal data
+            'custom_data': [table_name, field_name, pg_id, str(target_lang)]
         }
         print(job)
         joblist.append(job)
@@ -189,6 +197,104 @@ def add_translation(table_name, field_name, pg_id, lang_code, translated_text):
     except sqlite3.Error as e:
         print("ERROR: ", str(lang_code), " TRANSLATION FOR ", field_name, "COULD NOT BE UPDATED IN DATABASE.")
 
-
 # Register a receiver that listens for when page is published
 page_published.connect(on_update)
+
+
+def retrieve_translation():
+    PUBLIC_KEY = '9VB[l8X1eYBp5NOkmSVq5Iw$(Jq2TVDX=Xy@9tHlurEq5MD{$qdN(99jVi_Llhc@'
+    PRIVATE_KEY = '-(3GLORB[X]8Rw@@LZ2ch(Ieu](-m}y^g2vU3ty(jMly-D{yEAGq_smU{WY1xXJ0'
+    # using job endpoint as base url
+    base_url = "http://api.sandbox.gengo.com/v2/translate/jobs/"
+    # ID of job to be retrieved
+    # current job ID references completed job (set as reviewable in sandbox)
+    # job_id = "3289180"
+    # URL = base_url + job_id
+    header = {"Accept": "application/json"}
+    data = {
+
+        "api_key": PUBLIC_KEY,
+        "api_sig": PRIVATE_KEY,
+        "ts": str(int(time.time())),
+        "pre_mt": 1
+    }
+    # use your private_key to create an hmac
+    key = data["api_sig"]
+    keyb = bytes(key, encoding='utf8')
+    ts = data["ts"]
+    tsb = bytes(ts, encoding='utf8')
+    #sha1b = bytes(sha1, encoding='utf8')
+    data["api_sig"] = hmac.new(
+        keyb,
+        tsb,
+        sha1
+    ).hexdigest()
+
+    # submit get request via requests: we are now getting the list of job ids
+    get_machine_translation = requests.get(base_url, headers=header, params=data)
+    res_json = json.loads(get_machine_translation.text)
+    if not res_json["opstat"] == "ok":
+        msg = "API error occured.\nerror msg: {0}".format(
+            res_json["err"]
+        )
+        raise AssertionError(msg)
+    else:
+        resp = res_json.get("response")
+        idstring = ""
+        idlist = []
+        # loop through all job ids!
+        for r in resp:
+            job_id = r.get("job_id")
+            idstring = idstring + "," + str(job_id)
+            idlist.append(str(job_id))
+        # remove first comma from idstring :)
+        idstring = idstring[1:]
+
+        url = base_url + idstring
+        # print(url)
+        # header = {"Accept": "application/json"}
+        data = {
+
+            "api_key": PUBLIC_KEY,
+            "api_sig": PRIVATE_KEY,
+            "ts": str(int(time.time())),
+            "pre_mt": 1,
+            "id": idlist[0]
+        }
+        # use your private_key to create an hmac
+        key = data["api_sig"]
+        keyb = bytes(key, encoding='utf8')
+        ts = data["ts"]
+        tsb = bytes(ts, encoding='utf8')
+        #sha1b = bytes(sha1, encoding='utf8')
+        data["api_sig"] = hmac.new(
+            keyb,
+            tsb,
+            sha1
+        ).hexdigest()
+
+        data["data"] = json.dumps({'id': idlist[0]}, separators=(',', ':'))
+
+        # submit get request via requests: we are now getting the actual
+        # content of each job
+        get_jobs = requests.get(url, headers=header, params=data)
+        result_json = json.loads(get_jobs.text)
+        if not result_json["opstat"] == "ok":
+            msg = "API error occured.\nerror msg: {0}".format(
+                result_json["err"]
+            )
+            raise AssertionError(msg)
+        else:
+            # print job response
+            jobs = result_json.get("response").get("jobs")
+            # print(jobs)
+            for job in jobs:
+                if "body_tgt" in job:
+                    # print translated text
+                    # print(job.get("body_tgt"))
+                    print(job)
+
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(retrieve_translation, 'interval', seconds=30)
+scheduler.start()
