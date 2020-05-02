@@ -3,6 +3,16 @@
 <link rel="stylesheet" href="../../static/css/lang_bar.css">
 
 <div id="lang-bar">
+    {% load wagtail_modeltranslation %}
+
+{% get_available_languages_wmt as languages %}
+{% for language in languages %}
+<li>
+    <a href="{% change_lang language %}">
+        <span>{{ language }}</span>
+    </a>
+</li>
+{% endfor %}
     <label>Language:</label>
     <select id="lang-select" onchange="langChange()">
       <option value="en">English</option>

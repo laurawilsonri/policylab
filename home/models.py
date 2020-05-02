@@ -34,7 +34,7 @@ class TransHomePage(Page):
         return
 
     content_panels = Page.content_panels + [
-        FieldPanel('body'),
+       # FieldPanel('body'),
         FieldPanel('footer'),
     ]
 
@@ -203,6 +203,9 @@ def add_translation(table_name, field_name, page_id, lang_code, translated_text)
         # Create a SQL connection to our SQLite database
         con = sqlite3.connect("db.sqlite3")
 
+        if field_name.endswith("_en"):
+            field_name = field_name[:-3]
+
         # update that row in the table
         sql = '''UPDATE ''' + table_name + '''
                 SET ''' + field_name + '''_''' + lang_code + ''' = ?
@@ -213,6 +216,7 @@ def add_translation(table_name, field_name, page_id, lang_code, translated_text)
         cur.execute(sql, (translated_text, page_id))
         con.commit()
     except sqlite3.Error as e:
+        print(e)
         print("ERROR: ", str(lang_code), " TRANSLATION FOR ", field_name, "COULD NOT BE UPDATED IN DATABASE.")
 
 # Register a receiver that listens for when page is published
@@ -310,14 +314,14 @@ def retrieve_translation():
                 if "body_tgt" in job:
                     # print translated text
                     # print(job.get("body_tgt"))
-                    print(job)
+                    #print(job)
                     if "custom_data" in job:
                         print(job.get("custom_data"))
                         custom_data = json.loads(job.get("custom_data"))
                         table_name = custom_data.get("table_name")
                         print(table_name)
                         field_name = custom_data.get("field_name")
-                        print(field_name)
+                        print("field_name", field_name)
                         page_id = custom_data.get("page_id")
                         print(page_id)
                         lang_code = custom_data.get("target_lang")

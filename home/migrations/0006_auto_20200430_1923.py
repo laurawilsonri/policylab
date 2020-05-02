@@ -10,14 +10,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameField(
-            model_name='transhomepage',
-            old_name='body_po',
-            new_name='body_pt',
-        ),
-        migrations.RenameField(
-            model_name='transhomepage',
-            old_name='footer_po',
-            new_name='footer_pt',
-        ),
+        
     ]
