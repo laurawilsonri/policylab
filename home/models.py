@@ -326,7 +326,7 @@ def retrieve_translation():
                         print(page_id)
                         lang_code = custom_data.get("target_lang")
                         print(lang_code)
-                        translated_text = job.get("body_tgt")
+                        translated_text = job.get("body_tgt")[2:-3]
                         print(translated_text)
                         add_translation(table_name, field_name, page_id, lang_code, translated_text)
 
