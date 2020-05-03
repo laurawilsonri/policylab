@@ -1,18 +1,10 @@
 <!-- Dropdown to select language -->
 
+{% load wagtail_modeltranslation %}
 <link rel="stylesheet" href="../../static/css/lang_bar.css">
 
 <div id="lang-bar">
-    {% load wagtail_modeltranslation %}
 
-{% get_available_languages_wmt as languages %}
-{% for language in languages %}
-<li>
-    <a href="{% change_lang language %}">
-        <span>{{ language }}</span>
-    </a>
-</li>
-{% endfor %}
     <label>Language:</label>
     <select id="lang-select" onchange="langChange()">
       <option value="en">English</option>
@@ -27,6 +19,7 @@
         // TODO populate dropdown with supported languages 
         const dropdown = document.getElementById("lang-select")
 
+        
         // Set the selected language according to the current lang code in the URL
         loc_split = window.location.href.split('/');
         lang_code = loc_split[3];
