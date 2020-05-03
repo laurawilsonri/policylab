@@ -34,7 +34,7 @@ class TransHomePage(Page):
         return
 
     content_panels = Page.content_panels + [
-       # FieldPanel('body'),
+        FieldPanel('body'),
         FieldPanel('footer'),
     ]
 
