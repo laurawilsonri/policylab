@@ -20,9 +20,18 @@ import hmac
 import json
 import requests
 import time
+import csv
+from django.utils.translation import gettext_lazy as _
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
+
+# get supported languages
+LANGUAGES = []
+with open('plab/settings/languages.csv', newline='') as csvfile:
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+        LANGUAGES.append((row['code'], _(row['name'])))
 
 class TransHomePage(Page):
     body = RichTextField(blank=True, default="")
@@ -39,6 +48,10 @@ class TransHomePage(Page):
     ]
 
 def submit_job(text_dict, target_lang):
+    #target_lang must be of a supported language type for gengo
+    if(target_lang == "pt"):
+        target_lang = "pt-br"
+
     PUBLIC_KEY = '9VB[l8X1eYBp5NOkmSVq5Iw$(Jq2TVDX=Xy@9tHlurEq5MD{$qdN(99jVi_Llhc@'
     PRIVATE_KEY = '-(3GLORB[X]8Rw@@LZ2ch(Ieu](-m}y^g2vU3ty(jMly-D{yEAGq_smU{WY1xXJ0'
     # use jobs endpoint to submit jobs
@@ -170,7 +183,12 @@ def on_update(sender, **kwargs):
     print(changed_fields)
     # submit translation job via 3rd party API
     if len(changed_fields) > 0:
-        submit_job(changed_fields, "es")
+        for code, lang in LANGUAGES:
+            if code != "en":
+                print("===================", code)
+                submit_job(changed_fields, code)
+                print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& AFTER &&&&&&")
+            
 
 #### DATABASE UPDATING #####
 
