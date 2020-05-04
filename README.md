@@ -19,8 +19,7 @@ pip install wagtail-modeltranslation
 ## How to run:
 <pre><code>cd translation-flow
 source plab/env/bin/activate
-python manage.py runserver
-</code></pre>
+python manage.py runserver</code></pre>
 
 Then, navigate to http://127.0.0.1:8000/admin to see CMS!
 
@@ -29,10 +28,8 @@ username: admin
 password: policylab
 
 ## Push database changes
-<pre><code>
-  python manage.py makemigrations
-  python manage.py migrate
-</code></pre>
+<pre><code>python manage.py makemigrations
+  python manage.py migrate</code></pre>
 
 ## Database
 Found at <code>translation-flow/db.sqlite3</code> <br>
