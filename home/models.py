@@ -179,15 +179,11 @@ def on_update(sender, **kwargs):
             if field_text:
                 changed_fields[field_label] = {"label": field_label, "text": field_text, "pk": int(page.pk), "table_name": table_name}
 
-    print('********************************** \n')
-    print(changed_fields)
     # submit translation job via 3rd party API
     if len(changed_fields) > 0:
         for code, lang in LANGUAGES:
             if code != "en":
-                print("===================", code)
                 submit_job(changed_fields, code)
-                print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& AFTER &&&&&&")
             
 
 #### DATABASE UPDATING #####
