@@ -29,7 +29,7 @@ password: policylab
 
 ## Push database changes
 <pre><code>python manage.py makemigrations
-  python manage.py migrate</code></pre>
+python manage.py migrate</code></pre>
 
 ## Database
 Found at <code>translation-flow/db.sqlite3</code> <br>
